@@ -32,6 +32,11 @@ class UI{
                          <td><a href="#" class="btn btn-danger btn-sm delete">X</a></td>`;
        list.appendChild(row);                  
     }
+    static clearFields(){
+        document.querySelector('#title').value = '';
+        document.querySelector('#author').value = '';
+        document.querySelector('#isbn').value = '';
+    }
     
 }
 //Display Books
@@ -45,9 +50,11 @@ document.querySelector('#book-form').addEventListener('submit',(e) => {
     const title = document.querySelector('#title').value;
     const author = document.querySelector('#author').value;
     const isbn = document.querySelector('#isbn').value;
-    //Instantiate Book
+    //Instantiate Book to add new values from the form
     const bookObj = new Book(title, author, isbn);
     //Add Book to UI
     UI.addBookToList(bookObj);
+    //clear the fields of form
+    UI.clearFields();
 
 });
