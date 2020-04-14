@@ -9,19 +9,8 @@ class Book{
 //UI Class: Handle UI
 class UI{
     static displayBooks(){
-        const StoredBooks = [
-                {
-                 title: 'Haribahadur',
-                 author: 'Haribansha Acharya',
-                 isbn: 100
-                },
-                {
-                 title: 'Summer Love',
-                 author: 'Subin Ghimire',
-                 isbn: 101
-                }
-        ];
-        StoredBooks.forEach((bookEach) => UI.addBookToList(bookEach));
+        const books = Store.getBooks();
+        books.forEach((bookEach) => UI.addBookToList(bookEach));
     }
     static addBookToList(book){
        const list = document.querySelector('#book-list');
@@ -55,8 +44,37 @@ class UI{
         document.querySelector('#author').value = '';
         document.querySelector('#isbn').value = '';
     }
-    
 }
+//Store Class: Handle Storage
+class Store{
+    static getBooks(){
+       let books;
+       if(localStorage.getItem('books') === null){
+           books = [];
+       }
+       else{
+           books = JSON.parse(localStorage.getItem('books'));
+       }
+       return books;
+    }
+    static addBook(book){
+       const books = Store.getBooks();
+       books.push(book);
+       localStorage.setItem('books',JSON.stringify(books));
+    }
+    static removeBook(isbn){
+       const books = Store.getBooks();
+
+       books.forEach((book, index) => {
+           if(book.isbn === isbn){
+               books.splice(index, 1);
+           }
+       });
+       localStorage.setItem('books', JSON.stringify(books));
+    }
+
+}
+
 //Display Books
 document.addEventListener('DOMContentLoaded',UI.displayBooks);
 
@@ -77,6 +95,8 @@ document.querySelector('#book-form').addEventListener('submit',(e) => {
            const bookObj = new Book(title, author, isbn);
         //Add Book to UI
            UI.addBookToList(bookObj);
+        //Add book to Store
+           Store.addBook(bookObj);
         //Show alert for successful book added
            UI.showAlert('Book Added!','success');   
         //clear the fields of form
@@ -85,7 +105,10 @@ document.querySelector('#book-form').addEventListener('submit',(e) => {
 });
 //Remove a book from the book-list
 document.querySelector('#book-list').addEventListener('click',(e) => {
+     //Remove book from UI
      UI.deleteBook(e.target);
+     //Remove book from Store
+     Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
      //Show alert for book removed.
      UI.showAlert('Book Removed','sucess');
 });
