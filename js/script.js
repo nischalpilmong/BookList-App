@@ -37,6 +37,19 @@ class UI{
             el.parentElement.parentElement.remove();//<tr> is a parent element
         }
     }
+    static showAlert(message, className){
+       const div = document.createElement('div');
+       div.className = `alert alert-${className}`;
+       const text = document.createTextNode(message);
+       div.appendChild(text);
+       const container = document.querySelector('.container');
+       const form = document.querySelector('#book-form');
+       container.insertBefore(div, form);//insert the div before the form inside container
+       //vanish alert box in 3 seconds
+       setTimeout(() => {
+            document.querySelector('.alert').remove();
+       },3000);
+    }
     static clearFields(){
         document.querySelector('#title').value = '';
         document.querySelector('#author').value = '';
@@ -55,14 +68,24 @@ document.querySelector('#book-form').addEventListener('submit',(e) => {
     const title = document.querySelector('#title').value;
     const author = document.querySelector('#author').value;
     const isbn = document.querySelector('#isbn').value;
-    //Instantiate Book to add new values from the form
-    const bookObj = new Book(title, author, isbn);
-    //Add Book to UI
-    UI.addBookToList(bookObj);
-    //clear the fields of form
-    UI.clearFields();
+    //Validation of form
+    if(title === '' || author === '' || isbn === ''){
+       UI.showAlert('please fill in all fields!!', 'danger');
+    }
+    else{
+         //Instantiate Book to add new values from the form
+           const bookObj = new Book(title, author, isbn);
+        //Add Book to UI
+           UI.addBookToList(bookObj);
+        //Show alert for successful book added
+           UI.showAlert('Book Added!','success');   
+        //clear the fields of form
+           UI.clearFields();
+    }
 });
 //Remove a book from the book-list
 document.querySelector('#book-list').addEventListener('click',(e) => {
      UI.deleteBook(e.target);
+     //Show alert for book removed.
+     UI.showAlert('Book Removed','sucess');
 });
